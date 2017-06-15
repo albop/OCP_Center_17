@@ -65,4 +65,7 @@ var u; stderr 0.009;
 var e, u = phi*0.009*0.009;
 end;
 
-stoch_simul;
+
+check;
+
+//stoch_simul;

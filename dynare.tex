@@ -1,0 +1,616 @@
+%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\usepackage{textcomp}
+\usepackage{amsmath}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+ % this default might be overridden by plain title style
+ \newcommand\makebeamertitle{\frame{\maketitle}}%
+ % (ERT) argument for the TOC
+ \AtBeginDocument{%
+   \let\origtableofcontents=\tableofcontents
+   \def\tableofcontents{\@ifnextchar[{\origtableofcontents}{\gobbletableofcontents}}
+   \def\gobbletableofcontents#1{\origtableofcontents}
+ }
+ \newenvironment{lyxcode}
+   {\par\begin{list}{}{
+     \setlength{\rightmargin}{\leftmargin}
+     \setlength{\listparindent}{0pt}% needed for AMS classes
+     \raggedright
+     \setlength{\itemsep}{0pt}
+     \setlength{\parsep}{0pt}
+     \normalfont\ttfamily}%
+    \def\{{\char`\{}
+    \def\}{\char`\}}
+    \def\textasciitilde{\char`\~}
+    \item[]}
+   {\end{list}}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\title{Introduction to DSGE Models}
+\makebeamertitle
+
+\section{What are DSGE models?}
+
+\section{What is Dynare?}
+\begin{frame}{Dynare}
+\begin{itemize}
+\item Computes the solution of deterministic models
+\item Computes first and second order approximation to solution of stochastic
+models
+\item Estimates parameters of DSGE models (with maximum likelihood or Bayesian
+approach)
+\item Computes optimal policy Performs global sensitivity analysis
+\end{itemize}
+We'll only focus on point 1 and 2. For the remaining points, you can
+refer to the Dynare user guide.
+\end{frame}
+%
+\begin{frame}{Deterministic models}
+\begin{itemize}
+\item These models are usually introduced to study the impact of a change
+in regime, as in the introduction of a new tax, for instance.
+\item Models assume full information, perfect foresight and no uncertainty
+around shocks
+\item Shocks can hit the economy today or at any time in the future, in
+which case they would be expected with perfect foresight. They can
+also last one or several periods.
+\item Models introduce a positive shock today and zero shocks thereafter
+(with certainty).
+\item The solution does not require linearization, in fact, it doesnít even
+really need a steady state. Instead, it involves numerical simulation
+to find the exact paths of endogenous variables that meet the model's
+first order conditions and shock structure.
+\item This solution method can therefore be useful when the economy is far
+away from steady state (when linearization o§ers a poor approximation).
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Deterministic Models (see Juillard 1998)}
+\begin{itemize}
+\item We are in a perfect foresight framework, agents know about future
+shocks.
+\item The solution method is based on work of Lafargue, Boucekkine and Juillard.
+\item The approximation imposes return to equilibrium in finite time (instead
+of asymptotically) !
+\begin{itemize}
+\item Approximation of an infinite horizon model by a finite horizon one
+\end{itemize}
+\item Computes the trajectory of the variables numerically
+\item The algorithm is a Newton-type method (Juillard 1996)
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Stochastic Models}
+\begin{itemize}
+\item In these models, shocks hit today (with a surprise), but thereafter
+their expected value is zero.
+\item Expected future shocks, or permanent changes in the exogenous variables
+cannot be handled due to the use of Taylor approximations around a
+steady state.
+\item When these models are linearized to the 1st order, agents behave as
+if future shocks where equal to zero (since their expectation is null),
+which is the certainty equivalence property.
+\item This is an often overlooked point in the literature which misleads
+readers in supposing their models may be deterministic.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Stochastic case: the general model}
+
+\begin{align*}
+E_{t}\left\{ f\left(y_{t+1},y_{t},y_{t-1},u_{t}\right)\right\}  & =0\\
+E\left(u_{t}\right) & =0\\
+E\left(u_{t}u_{t}^{\prime}\right) & =\Sigma_{u}\\
+E\left(u_{t}u_{s}^{\prime}\right) & =0\,\forall t\neq s
+\end{align*}
+
+where $y_{t}$ is the vector of endogenous variables and $u_{t}$
+the one of exogenous stochastic shocks.
+\begin{itemize}
+\item shocks $u_{t}$ are observed at the beginning of period $t$ 
+\item not all variables are necessarily present with a lead and a lag
+\item decisions affecting the current value of the variables $y_{t}$ are
+function of the previous state of the system, $y_{t-1}$ and the shocks.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{A stochastic scale variable}
+
+At period $t$, the only stochastic variable is $y_{t+1}$ and $u_{t+1}$.
+
+We introduce the stochastic scale variable $\text{\ensuremath{\sigma}}$
+and auxiliary random variable $\epsilon_{t}$ such that:
+
+\begin{align*}
+u_{t+1} & =\sigma\epsilon_{t+1}\\
+E\left(\epsilon_{t}\right) & =0\\
+E\left(\epsilon_{t}\epsilon_{t}^{\prime}\right) & =\Sigma_{\epsilon}\\
+E\left(\epsilon_{t}\epsilon_{t}^{\prime}\right) & =0\,\forall t\neq s\\
+\Sigma_{u} & =\sigma^{2}\Sigma_{\epsilon}
+\end{align*}
+
+\end{frame}
+%
+\begin{frame}{Solution Function}
+
+\[
+y_{t}=g\left(y_{t-1},u_{t},\sigma\right)
+\]
+
+If $\sigma=0$, the model is deterministic. One can prove the existence
+of function $g$ and the conditions (see Jin and Judd, \textquotedbl{}Solving
+Dynamic Stochastic Models\textquotedbl{}). Then:
+
+\begin{align*}
+y_{t+1} & =g\left(y_{t},u_{t+1},\sigma\right)\\
+y_{t+1} & =g\left(g\left(y_{t-1},u_{t},\sigma\right),u_{t+1},\sigma\right)
+\end{align*}
+
+\[
+F\left(y_{t-1},u_{t},u_{t+1},\sigma\right)=f\left(g\left(g\left(y_{t-1},u_{t},\sigma\right),u_{t+1},\sigma\right),g\left(y_{t-1},u_{t},\sigma\right),y_{t-1},u_{t}\right)
+\]
+
+\[
+E_{t}\left\{ F\left(y_{t-1},u_{t},\sigma\epsilon_{t+1},\sigma\right)\right\} =0
+\]
+
+\end{frame}
+%
+\begin{frame}{Perturbation method}
+\begin{itemize}
+\item We need to obtain a Taylor expansion of the unknown solution function
+in the neighborhood of a problem we can solve, i.e., the steady state.
+\item The perturbations can be in the neighborhood of the ss OR increasing
+$\sigma$ from zero.
+\item The Taylor approximation of the solution is taken with respect to
+$y_{t-1}$, $u_{t}$ and $\sigma$
+\end{itemize}
+\[
+y_{t}=g\left(y_{t-1},u_{t},\sigma\right)
+\]
+
+\end{frame}
+%
+\begin{frame}{Deterministic Steady State}
+\begin{itemize}
+\item The Taylor approximation is taken with respect to the deterministic
+steady-state, i.e. the one we obtain in absenc e of shocks. It satisfies:
+\end{itemize}
+\begin{align*}
+f\left(\bar{y},\bar{y},\bar{y},0\right) & =0\\
+\bar{y} & =g\left(\bar{y},0,0\right)
+\end{align*}
+
+Clearly, there can be multiple ss. but the approximation is taken
+w.r.t. one only.
+\end{frame}
+%
+\begin{frame}{Solution}
+\begin{itemize}
+\item Dynare takes the first and second order Taylor approximation of the
+solution function
+\item It creates a structural state space representation (matrix)
+\item It computes the Schur decomposition.
+\item It checks the Blanchard-Kahn conditions.
+\item It selects the stable trajectory.
+\item More details (see Juillard's material).
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Writing a \textquotedbl{}.mod\textquotedbl{} file}
+\begin{itemize}
+\item preamble: lists variables and parameters
+\item model: spells out the model
+\item steady state or initial value: gives indications to find the steady-state
+of a model or the starting point for simulations or impulse response
+functions based on the model's solution
+\item shocks: defines the shocks to the system
+\item computation: instructs Dynare to undertake specific operations (e.e.
+forecasting estimating impulse response functions)
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Writing a \textquotedbl{}.mod\textquotedbl{} file (2)}
+\begin{itemize}
+\item Each instruction of the model must be terminated by a semi-colon (;),
+although a single instructions can span two lines, if you need extra
+space (just don't put a semi-colon)
+\item You can comment a line with forward slashes (//) or an entire section
+with /{*}, {*}/
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Example (from Collard 2001): stochastic case}
+\begin{itemize}
+\item Firms are producing a homogeneous final product that can be either
+consumed or invested by means of capital and labor services. Firms
+own their capital stock and hire labor supplied by the households.
+Households own the firms. In each and every period three perfectly
+competitive markets open 0 the markets for consumption goods, labor
+services, and financial capital in the form of firm's shares.
+\item Utility function:
+\[
+E_{t}\sum\beta\left(\ln c_{t}-\theta\frac{h_{t}^{1+\psi}}{1+\psi}\right)
+\]
+where $0<\beta<1$ is a constant discont factor, $c_{t}$ is consumption
+in period $t$, $h_{t}$ is the fraction of total available time dvoted
+to productive activity in period $t$, $\theta>0$ and $\psi>0$.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{An example (cont'd)}
+
+There exists a central planner that maximizes the household's utility
+functino subject to the following budget constraint:
+
+\[
+c_{t}+i_{t}=y_{t}
+\]
+
+Investment is used to form physical capital, which accumulates in
+the standard form as:
+
+\[
+k_{t+1}=e^{b_{t}}i_{t}+(1-\delta)k_{t},\,0<\delta<1
+\]
+
+where $b_{t}$ is a shock affecting incorporated technological progress.
+
+Output is produced by means of capital and labour services, relying
+on a constant returns to scale technology, represented by the following
+Cobb-Douglas production function ($0<\alpha<1$):
+
+\begin{align*}
+y_{t} & =A_{t}k_{t}^{\alpha}h_{t}^{1-\alpha}\\
+A_{t} & =e^{a_{t}}
+\end{align*}
+
+\end{frame}
+%
+\begin{frame}{Dynare}
+\begin{itemize}
+\item We assume that the shocks to technology are distributed with zero
+mean but display both persistence across time and correlation in the
+current period. Let us consider the joint process $\left(a_{t},b_{t}\right)$
+defined as:
+\end{itemize}
+\[
+\left(\begin{array}{c}
+a_{t}\\
+b_{t}
+\end{array}\right)=\left(\begin{array}{cc}
+\rho & \tau\\
+\tau & \rho
+\end{array}\right)\left(\begin{array}{c}
+a_{t-1}\\
+b_{t-1}
+\end{array}\right)+\left(\begin{array}{c}
+\epsilon_{t}\\
+v_{t}
+\end{array}\right)
+\]
+
+\begin{itemize}
+\item where:
+\begin{align*}
+E\left(\epsilon_{t}\right) & =E\left(v_{t}\right)=0\\
+E\left(\epsilon_{t}\epsilon_{s}\right) & =0,\,t\neq s\\
+E\left(v_{t}v_{s}\right) & =0,\,t\neq s\\
+E\left(\epsilon_{t}v_{s}\right) & =0,\,t\neq s
+\end{align*}
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Equilibrium equations}
+\begin{itemize}
+\item Arbitrage consuption/labour effort:
+\item 
+\[
+c_{t}\theta h_{t}^{1+\psi}=\left(1-\alpha\right)y_{t}
+\]
+\item Euler:
+\begin{align*}
+\beta E_{t}\left[\left(\frac{e^{b_{t}}c_{t}}{e^{b_{t+1}}c_{t+1}}\right)\left(e^{b_{t+1}}\right)\alpha\frac{y_{t+1}}{k_{t+1}}+1-\delta\right] & =1
+\end{align*}
+\[
+y_{t}=e^{a_{t}}k_{t}^{\alpha}h_{t}^{1-\alpha}
+\]
+\end{itemize}
+\begin{lyxcode}
+\[
+k_{t+1}=e^{b_{t}}\left(y_{t}-c_{t}\right)+\left(1-\delta\right)k_{t}
+\]
+
+\begin{align*}
+a_{t} & =\rho a_{t-1}+\tau b_{t-1}+\epsilon_{t}\\
+b_{t} & =\tau a_{t-1}+\rho b_{t-1}+\nu_{t}
+\end{align*}
+\end{lyxcode}
+\end{frame}
+%
+\begin{frame}{Preamble}
+\begin{itemize}
+\item endogenous variables: \textquotedbl{}var y, c, k, a, h, b;\textquotedbl{}
+\item exogenous variables: \textquotedbl{}varexo e, u;\textquotedbl{}
+\item the list of parameters: \textquotedbl{}parameters beta, rho, alpha,
+delta, theta, psi, tau;\textquotedbl{}
+\item Parameters values: 
+\end{itemize}
+\begin{lyxcode}
+\textquotedbl{}alpha~=~0.36;\textquotedbl{}~(capital~elasticity~in~the~production~function)
+
+\textquotedbl{}rho~=~0.95;\textquotedbl{}~(shock~persistence)
+
+\textquotedbl{}tau~=~0.025;\textquotedbl{}(cross~persistence)
+
+\textquotedbl{}beta~=~0.99;\textquotedbl{}(discount~factor)
+
+\textquotedbl{}delta~=~0.025;\textquotedbl{}(capital~depreciation~rate)
+
+\textquotedbl{}psi~=~0;\textquotedbl{}(labor~supply~elasticity)
+
+\textquotedbl{}theta~=~2.95;\textquotedbl{}~(disutility~of~labor)
+
+\textquotedbl{}phi~=~0.1;\textquotedbl{}(not~in~the~model~but~useful~to~express~the~variance~covariance~matrix)
+\end{lyxcode}
+\end{frame}
+%
+\begin{frame}{The model}
+\begin{itemize}
+\item Model declaration: It starts with the instruction model; and ends
+with end;, in between all equilibrium conditions are written exactly
+the way we write it by hand.
+\item There need to be as many equations as you declared endogenous variables.
+\item Equations are entered one after the other; no matrix representation
+is necessary. Variable and parameter names used in the model block
+must be the same as those declared in the preamble; variable and parameter
+names are case sensitive.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{The model: timing conventions}
+\begin{itemize}
+\item If x is \textit{decided} in period t then we simply write x.
+\item When the variable is decided in t-1, such as the capital stock in
+our simple model, we write x(-1).
+\item When a variable is decided in the next period, t + 1, such as consumption
+in the Euler equation, we write x(+1).
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{The model}
+
+model;
+
+c{*}theta{*}h\textasciicircum{}(1+psi)=(1-alpha){*}y;
+
+k = beta{*}(((exp(b){*}c)/(exp(b(+1)){*}c(+1))) {*}(exp(b(+1)){*}alpha{*}y(+1)+(1-delta){*}k));
+
+y = exp(a){*}(k(-1)\textasciicircum{}alpha){*}(h\textasciicircum{}(1-alpha));
+
+k = exp(b){*}(y-c)+(1-delta){*}k(-1);
+
+a = rho{*}a(-1)+tau{*}b(-1) + e;
+
+b = tau{*}a(-1)+rho{*}b(-1) + u;
+
+end;
+\end{frame}
+%
+\begin{frame}{The model (for stochastic models)}
+\begin{itemize}
+\item initval;
+\item y = 1.08068253095672; c = 0.80359242014163; h = 0.29175631001732;
+k = 11.08360443260358; a = 0; b = 0; e = 0; u = 0; end; 
+\item Adding steady just after your initval block will instruct Dynare to
+consider your initial values as mere approximations and start simulations
+or impulse response functions from the exact steady state. 
+\item You need to enter a \textquotedbl{}good\textquotedbl{} steady state.
+Dynare can help in finding your model's steady state by calling the
+appropriate Matlab functions.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{The model: the check command}
+
+after the initval or endval block (following the steady command if
+you decide to add one): \textquotedbl{}check\textquotedbl{} command.
+This computes and displays the eigenvalues of your system which are
+used in the solution method. As mentioned earlier, a necessary condition
+for the uniqueness of a stable equilibrium in the neighborhood of
+the steady state is that there are as many eigenvalues larger than
+one in modulus as there are forward looking variables in the system.
+\end{frame}
+%
+\begin{frame}{Shocks (stochastic)}
+\begin{itemize}
+\item Can only be temporary and hit the system today (expectation of future
+shocks must be zero).
+\item We can make the efect of the shock propagate slowly throughout the
+economy by introducing a latent shock variable $\epsilon_{t}$ and
+$\nu_{t}$ that affects the model's true exogenous variable, $a_{t}$
+and $b_{t}$ ,AR(1) 
+\item In that case, though, we would declare $a_{t}$ and $b_{t}$ as endogenous
+variables and $\epsilon_{t}$ and $\nu_{t}$ as exogenous variables
+\end{itemize}
+\begin{lyxcode}
+shocks;~
+
+var~e;~stderr~0.009;~
+
+var~u;~stderr~0.009;
+
+var~e,~u~=~phi{*}0.009{*}0.009;~
+
+end;
+\end{lyxcode}
+\end{frame}
+%
+\begin{frame}{Computation (stochastic)}
+\begin{itemize}
+\item stoch\_simul is usually the appropriate command
+\item it computes a Taylor approximation of the decision and transition
+functions for the model (the equations listing current values of the
+endogenous variables of the model as a function of the previous states
+of the model and current shocks), impulse response functions and various
+descriptive statistics (moments, variance decomposition, correlation
+and autocorrelation coefficients)
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Computation (stochastic)}
+
+Main options (see the Manual)
+\begin{itemize}
+\item irf=INTEGER: number of periods on which to compute the IRFS (default=40).
+Setting IRF=0, suppresses the plotting of IRF's
+\item order=1 or 2: order of Taylor approximation (default=2), unless you're
+working with a linear model, in which case order is automatically
+set to 1.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Output (stochastic)}
+\begin{itemize}
+\item Model summary: a count of the various variable types in your model
+(endogenous, jumpers, etc...)
+\item If you use the check command: eigenvalues and a confirmation of the
+Blanchard-Kahn conditions
+\item Matrix of covariance of exogenous shocks (consistent with the input
+on the shock)
+\item Policy and transition functions
+\item Moments of simulated variables (up to fourth moments)
+\item Correlation of simulated variables (contemporaneous)
+\item Autocorrelation of simulated variables: up to the f-th lag as specified
+in the options of stoch simul.
+\end{itemize}
+\end{frame}
+%
+\begin{frame}{Deterministic model, shock}
+\end{frame}
+
+\framesubtitle{A temporary shock to TFP}
+\begin{itemize}
+\item $A_{t}\neq e^{a_{t}}$, $\epsilon_{t}=0$, $v_{t}=0$
+\begin{itemize}
+\item The economy is at the steady state (A=1)
+\item There is an unexpected drop in TFP of 10\% at the beginning of period
+1
+\item Deterministic shocks are described in shocks block
+\end{itemize}
+\end{itemize}
+%
+\begin{frame}{Deterministic model, shock}
+\end{frame}
+
+\framesubtitle{A temporary shock to TFP}
+\begin{lyxcode}
+initval;
+
+A=1;
+
+y~=to~be~computed;
+
+c~=~to~be~computed;
+
+h~=~to~be~computed;
+
+k~=~to~be~computed;
+
+a~=~0;
+
+b~=~0;
+
+end;~
+
+steady;
+
+shocks;
+
+var~A;
+
+periods~1;
+
+values~0.9;
+
+end;
+\end{lyxcode}
+%
+\begin{frame}{Deterministic model, shock}
+\end{frame}
+
+\framesubtitle{A temporary shock to TFP}
+\begin{itemize}
+\item the economy is at the steady-state
+\item TFP jumps by 4\% in period 5 and grows by 1\% during the 4 following
+periods
+\end{itemize}
+\begin{lyxcode}
+shocks;
+
+var~A;
+
+periods~4,~5,~6,~7,~8;
+
+values~1.04,~1.05,~1.06,~1.07,~1.08;
+
+end;
+\end{lyxcode}
+%
+\begin{frame}{Deterministic model, shock}
+\end{frame}
+
+\framesubtitle{A permanent shock}
+\begin{itemize}
+\item The economy is at the initial steady state (A=1)
+\item In period 1, TFP jumps to 1.05, permanently
+\end{itemize}
+%
+\begin{frame}{Deterministic model, shock}
+\end{frame}
+
+\framesubtitle{A permanent shock}
+\begin{lyxcode}
+model..remember~that~the~exo~variable~is~here~A.~
+
+end;~
+
+initval;
+
+A=1;~...initial~steady~state..
+
+end;
+
+steady;
+
+endval;
+
+A=1.05;~..new~steady~state,~to~be~computed..~end;
+\end{lyxcode}
+%
+\begin{frame}{Deterministic model, output}
+\end{frame}
+
+\framesubtitle{A permanent shock}
+\begin{itemize}
+\item Not very detailed
+\item Steady state values, if command steady
+\item Eigenvalues, if check
+\item Some intermediate output: the errors at each iteration of the Newton
+solver used to estimate the solution to your model
+\item Sou need custom codeif you want richer statistics
+\end{itemize}
+
+\end{document}
+\grid
